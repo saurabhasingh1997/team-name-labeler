@@ -48,7 +48,7 @@ async function run() {
   //   }
   // }
 
-  const token = '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'
+  const token = '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'
   const configPath = '.github/teams.yml'
   const client = createClient(token)
   const labelsConfiguration: Map<string, string[]> =

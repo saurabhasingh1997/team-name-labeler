@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as github from '@actions/github'
@@ -53,19 +54,21 @@ async function fetchContent(
   externalRepo: ExternalRepo | undefined
 ): Promise<string> {
   let repo = 'saurabhasingh1997/team-name-labeler'
-  let ref = '9ef026b1f2f1dc9681aa47086c0d8a27fdbcf953'
+  let ref = '69ced2702b4727779f6ebc309aebdc33350f07fb'
   if (externalRepo?.repo) {
     repo = externalRepo?.repo
     ref = externalRepo?.ref
   }
 
   core.info(`Using repo ${repo} and ref ${ref}`)
+  console.log('Before API', path)
   const response: any = await client.rest.repos.getContent({
     owner: 'saurabhasingh1997',
     repo,
     path,
     ref
   })
+  console.log('After API')
 
   if (!Array.isArray(response.data) && response.data.content)
     return Buffer.from(response.data.content, 'base64').toString()

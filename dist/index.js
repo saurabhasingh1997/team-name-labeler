@@ -13747,6 +13747,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addLabels = exports.createClient = exports.getLabelsConfiguration = exports.getPrAuthor = exports.getPrNumber = void 0;
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 const github = __importStar(__nccwpck_require__(5381));
@@ -13787,18 +13788,20 @@ exports.getLabelsConfiguration = getLabelsConfiguration;
 function fetchContent(client, path, externalRepo) {
     return __awaiter(this, void 0, void 0, function* () {
         let repo = 'saurabhasingh1997/team-name-labeler';
-        let ref = '9ef026b1f2f1dc9681aa47086c0d8a27fdbcf953';
+        let ref = '69ced2702b4727779f6ebc309aebdc33350f07fb';
         if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
             repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
             ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
         }
         core.info(`Using repo ${repo} and ref ${ref}`);
+        console.log('Before API', path);
         const response = yield client.rest.repos.getContent({
             owner: 'saurabhasingh1997',
             repo,
             path,
             ref
         });
+        console.log('After API');
         if (!Array.isArray(response.data) && response.data.content)
             return Buffer.from(response.data.content, 'base64').toString();
         throw new Error('Invalid yaml file');
@@ -13888,7 +13891,7 @@ function run() {
         //     core.setFailed(error.message)
         //   }
         // }
-        const token = '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';
+        const token = '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';
         const configPath = '.github/teams.yml';
         const client = (0, github_1.createClient)(token);
         const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, configPath, undefined);
