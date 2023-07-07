@@ -44,7 +44,6 @@ export async function getLabelsConfiguration(
     configurationPath,
     externalRepo
   )
-  console.log('configurationContent is :- ', configurationContent)
   const configObject: any = yaml.load(configurationContent)
   return getLabelGlobMapFromObject(configObject)
 }
@@ -55,7 +54,7 @@ async function fetchContent(
   externalRepo: ExternalRepo | undefined
 ): Promise<string> {
   let repo = 'team-name-labeler'
-  let ref = '0effe9565cf925c5570479009bbc3686032983fc'
+  let ref = 'a21746d0858da040cd8e020f2082bea33b2bb567'
   if (externalRepo?.repo) {
     repo = externalRepo?.repo
     ref = externalRepo?.ref

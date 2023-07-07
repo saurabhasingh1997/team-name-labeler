@@ -50,14 +50,20 @@ async function run() {
   // }
 
   const token = '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'
-  const configPath = 'CODEOWNERS'
+  const codeOwnersConfigPath = 'CODEOWNERS'
+  const teamLabelerConfigPath = '.github/teams.yml'
   const client = createClient(token)
-  getCodeOwners(client, configPath, undefined)
-  // const labelsConfiguration: Map<string, string[]> =
-  //   await getLabelsConfiguration(client, configPath, undefined)
+  const codeOwners = await getCodeOwners(
+    client,
+    codeOwnersConfigPath,
+    undefined
+  )
+  console.log('Code owners are :- ', codeOwners)
+  const labelsConfiguration: Map<string, string[]> =
+    await getLabelsConfiguration(client, teamLabelerConfigPath, undefined)
 
-  // const labels: string[] = getTeamLabel(labelsConfiguration, `@saurabhsinghd11`)
-  // console.log(labels)
+  const labels: string[] = getTeamLabel(labelsConfiguration, codeOwners)
+  console.log(labels)
 }
 
 run()
