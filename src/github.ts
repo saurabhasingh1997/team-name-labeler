@@ -44,6 +44,7 @@ export async function getLabelsConfiguration(
     configurationPath,
     externalRepo
   )
+  console.log('configurationContent is :- ', configurationContent)
   const configObject: any = yaml.load(configurationContent)
   return getLabelGlobMapFromObject(configObject)
 }
@@ -53,22 +54,20 @@ async function fetchContent(
   path: string,
   externalRepo: ExternalRepo | undefined
 ): Promise<string> {
-  let repo = 'saurabhasingh1997/team-name-labeler'
-  let ref = '69ced2702b4727779f6ebc309aebdc33350f07fb'
+  let repo = 'team-name-labeler'
+  let ref = 'afab2842580493c7076823373cacf0d7f4cd983a'
   if (externalRepo?.repo) {
     repo = externalRepo?.repo
     ref = externalRepo?.ref
   }
 
   core.info(`Using repo ${repo} and ref ${ref}`)
-  console.log('Before API', path)
   const response: any = await client.rest.repos.getContent({
     owner: 'saurabhasingh1997',
     repo,
     path,
     ref
   })
-  console.log('After API')
 
   if (!Array.isArray(response.data) && response.data.content)
     return Buffer.from(response.data.content, 'base64').toString()

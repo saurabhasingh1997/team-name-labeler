@@ -13780,6 +13780,7 @@ exports.getPrAuthor = getPrAuthor;
 function getLabelsConfiguration(client, configurationPath, externalRepo) {
     return __awaiter(this, void 0, void 0, function* () {
         const configurationContent = yield fetchContent(client, configurationPath, externalRepo);
+        console.log('configurationContent is :- ', configurationContent);
         const configObject = yaml.load(configurationContent);
         return getLabelGlobMapFromObject(configObject);
     });
@@ -13787,21 +13788,19 @@ function getLabelsConfiguration(client, configurationPath, externalRepo) {
 exports.getLabelsConfiguration = getLabelsConfiguration;
 function fetchContent(client, path, externalRepo) {
     return __awaiter(this, void 0, void 0, function* () {
-        let repo = 'saurabhasingh1997/team-name-labeler';
-        let ref = '69ced2702b4727779f6ebc309aebdc33350f07fb';
+        let repo = 'team-name-labeler';
+        let ref = 'afab2842580493c7076823373cacf0d7f4cd983a';
         if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
             repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
             ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
         }
         core.info(`Using repo ${repo} and ref ${ref}`);
-        console.log('Before API', path);
         const response = yield client.rest.repos.getContent({
             owner: 'saurabhasingh1997',
             repo,
             path,
             ref
         });
-        console.log('After API');
         if (!Array.isArray(response.data) && response.data.content)
             return Buffer.from(response.data.content, 'base64').toString();
         throw new Error('Invalid yaml file');
@@ -13891,8 +13890,8 @@ function run() {
         //     core.setFailed(error.message)
         //   }
         // }
-        const token = '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';
-        const configPath = '.github/teams.yml';
+        const token = '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';
+        const configPath = 'CODEOWNERS';
         const client = (0, github_1.createClient)(token);
         const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, configPath, undefined);
         const labels = (0, teams_1.getTeamLabel)(labelsConfiguration, `@saurabhsinghd11`);
