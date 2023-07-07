@@ -55,7 +55,7 @@ async function fetchContent(
   externalRepo: ExternalRepo | undefined
 ): Promise<string> {
   let repo = 'team-name-labeler'
-  let ref = 'afab2842580493c7076823373cacf0d7f4cd983a'
+  let ref = '0effe9565cf925c5570479009bbc3686032983fc'
   if (externalRepo?.repo) {
     repo = externalRepo?.repo
     ref = externalRepo?.ref
