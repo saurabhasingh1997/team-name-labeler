@@ -13708,6 +13708,79 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 7408:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCodeOwners = void 0;
+const core = __importStar(__nccwpck_require__(1650));
+function getCodeOwners(client, configurationPath, externalRepo) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const configurationContent = yield fetchContent(client, configurationPath, externalRepo);
+        console.log('configurationContent is :- ', configurationContent);
+        const result = configurationContent.split(/\r?\n/).filter(element => element);
+        console.log('Result after split is  :- ', result);
+    });
+}
+exports.getCodeOwners = getCodeOwners;
+function fetchContent(client, path, externalRepo) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let repo = 'team-name-labeler';
+        let ref = '0effe9565cf925c5570479009bbc3686032983fc';
+        if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
+            repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
+            ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
+        }
+        core.info(`Using repo ${repo} and ref ${ref}`);
+        const response = yield client.rest.repos.getContent({
+            owner: 'saurabhasingh1997',
+            repo,
+            path,
+            ref
+        });
+        if (!Array.isArray(response.data) && response.data.content)
+            return Buffer.from(response.data.content, 'base64').toString();
+        throw new Error('Invalid yaml file');
+    });
+}
+
+
+/***/ }),
+
 /***/ 534:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -13789,7 +13862,7 @@ exports.getLabelsConfiguration = getLabelsConfiguration;
 function fetchContent(client, path, externalRepo) {
     return __awaiter(this, void 0, void 0, function* () {
         let repo = 'team-name-labeler';
-        let ref = 'afab2842580493c7076823373cacf0d7f4cd983a';
+        let ref = '0effe9565cf925c5570479009bbc3686032983fc';
         if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
             repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
             ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
@@ -13855,8 +13928,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const teams_1 = __nccwpck_require__(7255);
 const github_1 = __nccwpck_require__(534);
+const code_owner_utils_1 = __nccwpck_require__(7408);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // try {
@@ -13890,34 +13963,17 @@ function run() {
         //     core.setFailed(error.message)
         //   }
         // }
-        const token = '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';
+        const token = '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';
         const configPath = 'CODEOWNERS';
         const client = (0, github_1.createClient)(token);
-        const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, configPath, undefined);
-        const labels = (0, teams_1.getTeamLabel)(labelsConfiguration, `@saurabhsinghd11`);
-        console.log(labels);
+        (0, code_owner_utils_1.getCodeOwners)(client, configPath, undefined);
+        // const labelsConfiguration: Map<string, string[]> =
+        //   await getLabelsConfiguration(client, configPath, undefined)
+        // const labels: string[] = getTeamLabel(labelsConfiguration, `@saurabhsinghd11`)
+        // console.log(labels)
     });
 }
 run();
-
-
-/***/ }),
-
-/***/ 7255:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getTeamLabel = void 0;
-function getTeamLabel(labelsConfiguration, author) {
-    const labels = [];
-    for (const [label, authors] of labelsConfiguration.entries())
-        if (authors.includes(author))
-            labels.push(label);
-    return labels;
-}
-exports.getTeamLabel = getTeamLabel;
 
 
 /***/ }),

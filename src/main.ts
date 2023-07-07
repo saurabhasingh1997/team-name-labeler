@@ -9,6 +9,7 @@ import {
   addLabels,
   createClient
 } from './github'
+import {getCodeOwners} from './code-owner.utils'
 
 async function run() {
   // try {
@@ -49,13 +50,14 @@ async function run() {
   // }
 
   const token = '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'
-  const configPath = '.github/teams.yml'
+  const configPath = 'CODEOWNERS'
   const client = createClient(token)
-  const labelsConfiguration: Map<string, string[]> =
-    await getLabelsConfiguration(client, configPath, undefined)
+  getCodeOwners(client, configPath, undefined)
+  // const labelsConfiguration: Map<string, string[]> =
+  //   await getLabelsConfiguration(client, configPath, undefined)
 
-  const labels: string[] = getTeamLabel(labelsConfiguration, `@saurabhsinghd11`)
-  console.log(labels)
+  // const labels: string[] = getTeamLabel(labelsConfiguration, `@saurabhsinghd11`)
+  // console.log(labels)
 }
 
 run()
