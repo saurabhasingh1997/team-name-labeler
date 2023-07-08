@@ -14308,7 +14308,7 @@ const code_owner_utils_1 = __nccwpck_require__(7408);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const token = core.getInput('repo-token', { required: true });
+            const token = core.getInput('repo-token');
             const codeOwnersConfigPath = core.getInput('code-owners-config-path', {
                 required: true
             });
