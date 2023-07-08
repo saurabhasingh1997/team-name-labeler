@@ -1,5 +1,5 @@
 
-# Create a JavaScript Action using TypeScript
+# team-name-labeler action
 
 Use this action to auto-add label you PR's.:rocket:
 
