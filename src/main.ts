@@ -12,7 +12,7 @@ import {getCodeOwners} from './code-owner.utils'
 
 async function run() {
   try {
-    const token = core.getInput('repo-token', {required: true})
+    const token = core.getInput('repo-token')
     const codeOwnersConfigPath = core.getInput('code-owners-config-path', {
       required: true
     })

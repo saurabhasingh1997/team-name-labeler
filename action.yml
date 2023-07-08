@@ -1,11 +1,19 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'team-name-labeler'
+description: 'Adds labels to PR's automatically based on code-owners and PR author'
+author: 'Saurabh Singh'
 inputs:
-  milliseconds: # change this
+  repo-token:
+    description: 'The GitHub token used to add/remove labels'
+    required: false
+    default: ${{ github.token }}
+  code-owners-config-pathn:
+    description: 'CODEOWNERS file path used to get owners for file changes'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    default: '.github/CODEOWNERS'
+  team-labeler-config-path:
+    description: 'Team labeler config used for mapping devs to teams'
+    required: true
+    default: '.github/teams.yml'
 runs:
   using: 'node16'
   main: 'dist/index.js'
