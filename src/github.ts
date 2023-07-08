@@ -1,10 +1,8 @@
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as github from '@actions/github'
 import * as yaml from 'js-yaml'
 import * as core from '@actions/core'
-import {ExternalRepo} from './types'
 
 type GitHub = ReturnType<typeof github.getOctokit>
 
@@ -36,33 +34,23 @@ export function getPrAuthor(): string | undefined {
 
 export async function getLabelsConfiguration(
   client: GitHub,
-  configurationPath: string,
-  externalRepo: ExternalRepo | undefined
+  configurationPath: string
 ): Promise<Map<string, string[]>> {
   const configurationContent: string = await fetchContent(
     client,
-    configurationPath,
-    externalRepo
+    configurationPath
   )
   const configObject: any = yaml.load(configurationContent)
   return getLabelGlobMapFromObject(configObject)
 }
 
-async function fetchContent(
-  client: GitHub,
-  path: string,
-  externalRepo: ExternalRepo | undefined
-): Promise<string> {
-  let repo = 'team-name-labeler'
-  let ref = 'a21746d0858da040cd8e020f2082bea33b2bb567'
-  if (externalRepo?.repo) {
-    repo = externalRepo?.repo
-    ref = externalRepo?.ref
-  }
+async function fetchContent(client: GitHub, path: string): Promise<string> {
+  const repo = github.context.repo.repo
+  const ref = github.context.sha
 
   core.info(`Using repo ${repo} and ref ${ref}`)
   const response: any = await client.rest.repos.getContent({
-    owner: 'saurabhasingh1997',
+    owner: github.context.repo.owner,
     repo,
     path,
     ref
@@ -99,10 +87,44 @@ export async function addLabels(
   prNumber: number,
   labels: string[]
 ) {
-  await client.rest.issues.addLabels({
-    owner: 'saurabhasingh1997',
-    repo: 'saurabhasingh1997/team-name-labeler',
+  core.info(`Adding labels ... `)
+  await client.rest.issues.setLabels({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
     issue_number: prNumber,
     labels
   })
+  core.info(`Labels Added!`)
+}
+
+export async function getPRDetails(client: GitHub, prNumber: number) {
+  let pullRequest: any
+  try {
+    const result = await client.rest.pulls.get({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      pull_number: prNumber
+    })
+    pullRequest = result.data
+  } catch (error: any) {
+    core.warning(`Could not find pull request #${prNumber}, skipping`)
+  }
+  return pullRequest
+}
+
+export async function getChangedFiles(
+  client: GitHub,
+  prNumber: number
+): Promise<string[]> {
+  const listFilesOptions = client.rest.pulls.listFiles.endpoint.merge({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    pull_number: prNumber
+  })
+
+  const listFilesResponse = await client.paginate(listFilesOptions)
+  const changedFiles = listFilesResponse.map((f: any) => f.filename)
+
+  core.debug('found changed files:')
+  return changedFiles
 }

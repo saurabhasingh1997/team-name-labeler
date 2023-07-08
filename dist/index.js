@@ -4879,7 +4879,7 @@ exports.isPlainObject = isPlainObject;
 
 /***/ }),
 
-/***/ 1781:
+/***/ 8326:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -11409,7 +11409,7 @@ var _v = _interopRequireDefault(__nccwpck_require__(4192));
 
 var _v2 = _interopRequireDefault(__nccwpck_require__(291));
 
-var _v3 = _interopRequireDefault(__nccwpck_require__(7761));
+var _v3 = _interopRequireDefault(__nccwpck_require__(1781));
 
 var _v4 = _interopRequireDefault(__nccwpck_require__(5586));
 
@@ -11868,7 +11868,7 @@ function _default(name, version, hashfunc) {
 
 /***/ }),
 
-/***/ 7761:
+/***/ 1781:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -14027,12 +14027,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getCodeOwners = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const github = __importStar(__nccwpck_require__(5381));
 const core = __importStar(__nccwpck_require__(1650));
 const minimatch_1 = __nccwpck_require__(8576);
-function getCodeOwners(client, configurationPath, externalRepo) {
+const github_1 = __nccwpck_require__(534);
+function getCodeOwners(client, configurationPath, prNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        const prNumber = 9;
-        const codeOwnersContent = yield fetchContent(client, configurationPath, externalRepo);
+        const codeOwnersContent = yield fetchContent(client, configurationPath);
         const contentLines = codeOwnersContent
             .split(/\r?\n/)
             .filter(element => element);
@@ -14047,10 +14049,10 @@ function getCodeOwners(client, configurationPath, externalRepo) {
             values.shift();
             globsToDevMapper[pathGlob] = values;
         });
-        const prDetails = yield getPRDetails(client, prNumber);
+        core.info(`Globs to Dev mapper is :- ${globsToDevMapper}`);
         core.debug(`fetching changed files for pr #${prNumber}`);
-        const changedFiles = yield getChangedFiles(client, prNumber);
-        console.log('Changed files are :- ', changedFiles);
+        const changedFiles = yield (0, github_1.getChangedFiles)(client, prNumber);
+        core.info(`Changed files are :- ${changedFiles}`);
         const matchers = Object.keys(globsToDevMapper).map(pathGlob => new minimatch_1.Minimatch(pathGlob, { dot: true }));
         const matchedGlobsToDevMapper = {};
         for (const changedFile of changedFiles) {
@@ -14066,63 +14068,25 @@ function getCodeOwners(client, configurationPath, externalRepo) {
     });
 }
 exports.getCodeOwners = getCodeOwners;
-function fetchContent(client, path, externalRepo) {
+function fetchContent(client, path) {
     return __awaiter(this, void 0, void 0, function* () {
-        let repo = 'team-name-labeler';
-        let ref = 'a21746d0858da040cd8e020f2082bea33b2bb567';
-        if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
-            repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
-            ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
-        }
+        const repo = github.context.repo.repo;
+        const ref = github.context.sha;
         core.info(`Using repo ${repo} and ref ${ref}`);
         const response = yield client.rest.repos.getContent({
-            owner: 'saurabhasingh1997',
+            owner: github.context.repo.owner,
             repo,
             path,
             ref
         });
         if (!Array.isArray(response.data) && response.data.content)
             return Buffer.from(response.data.content, 'base64').toString();
-        throw new Error('Invalid yaml file');
-    });
-}
-function getPRDetails(client, prNumber) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let pullRequest;
-        try {
-            const result = yield client.rest.pulls.get({
-                owner: 'saurabhasingh1997',
-                repo: 'team-name-labeler',
-                pull_number: prNumber
-            });
-            pullRequest = result.data;
-        }
-        catch (error) {
-            core.warning(`Could not find pull request #${prNumber}, skipping`);
-        }
-        return pullRequest;
-    });
-}
-function getChangedFiles(client, prNumber) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const listFilesOptions = client.rest.pulls.listFiles.endpoint.merge({
-            owner: 'saurabhasingh1997',
-            repo: 'team-name-labeler',
-            pull_number: prNumber
-        });
-        const listFilesResponse = yield client.paginate(listFilesOptions);
-        const changedFiles = listFilesResponse.map((f) => f.filename);
-        core.debug('found changed files:');
-        //   for (const file of changedFiles) {
-        //     core.debug('  ' + file)
-        //   }
-        return changedFiles;
+        throw new Error('Invalid CodeOwners file');
     });
 }
 function isMatch(changedFile, matchers) {
     core.debug(`    matching patterns against file ${changedFile}`);
     for (const matcher of matchers) {
-        core.debug(`   - ${printPattern(matcher)}`);
         if (matcher.match(changedFile)) {
             core.debug(`   ${changedFile}  matched against  ${printPattern(matcher)} `);
             return matcher.pattern;
@@ -14176,12 +14140,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.addLabels = exports.createClient = exports.getLabelsConfiguration = exports.getPrAuthor = exports.getPrNumber = void 0;
-/* eslint-disable no-console */
+exports.getChangedFiles = exports.getPRDetails = exports.addLabels = exports.createClient = exports.getLabelsConfiguration = exports.getPrAuthor = exports.getPrNumber = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 const github = __importStar(__nccwpck_require__(5381));
-const yaml = __importStar(__nccwpck_require__(1781));
+const yaml = __importStar(__nccwpck_require__(8326));
 const core = __importStar(__nccwpck_require__(1650));
 function getPrNumber() {
     const pullRequest = github.context.payload.pull_request;
@@ -14207,25 +14170,21 @@ function getPrAuthor() {
     return pullRequest.user.login;
 }
 exports.getPrAuthor = getPrAuthor;
-function getLabelsConfiguration(client, configurationPath, externalRepo) {
+function getLabelsConfiguration(client, configurationPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        const configurationContent = yield fetchContent(client, configurationPath, externalRepo);
+        const configurationContent = yield fetchContent(client, configurationPath);
         const configObject = yaml.load(configurationContent);
         return getLabelGlobMapFromObject(configObject);
     });
 }
 exports.getLabelsConfiguration = getLabelsConfiguration;
-function fetchContent(client, path, externalRepo) {
+function fetchContent(client, path) {
     return __awaiter(this, void 0, void 0, function* () {
-        let repo = 'team-name-labeler';
-        let ref = 'a21746d0858da040cd8e020f2082bea33b2bb567';
-        if (externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo) {
-            repo = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.repo;
-            ref = externalRepo === null || externalRepo === void 0 ? void 0 : externalRepo.ref;
-        }
+        const repo = github.context.repo.repo;
+        const ref = github.context.sha;
         core.info(`Using repo ${repo} and ref ${ref}`);
         const response = yield client.rest.repos.getContent({
-            owner: 'saurabhasingh1997',
+            owner: github.context.repo.owner,
             repo,
             path,
             ref
@@ -14256,15 +14215,49 @@ function createClient(token) {
 exports.createClient = createClient;
 function addLabels(client, prNumber, labels) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.rest.issues.addLabels({
-            owner: 'saurabhasingh1997',
-            repo: 'saurabhasingh1997/team-name-labeler',
+        core.info(`Adding labels ... `);
+        yield client.rest.issues.setLabels({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
             issue_number: prNumber,
             labels
         });
+        core.info(`Labels Added!`);
     });
 }
 exports.addLabels = addLabels;
+function getPRDetails(client, prNumber) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let pullRequest;
+        try {
+            const result = yield client.rest.pulls.get({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                pull_number: prNumber
+            });
+            pullRequest = result.data;
+        }
+        catch (error) {
+            core.warning(`Could not find pull request #${prNumber}, skipping`);
+        }
+        return pullRequest;
+    });
+}
+exports.getPRDetails = getPRDetails;
+function getChangedFiles(client, prNumber) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const listFilesOptions = client.rest.pulls.listFiles.endpoint.merge({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: prNumber
+        });
+        const listFilesResponse = yield client.paginate(listFilesOptions);
+        const changedFiles = listFilesResponse.map((f) => f.filename);
+        core.debug('found changed files:');
+        return changedFiles;
+    });
+}
+exports.getChangedFiles = getChangedFiles;
 
 
 /***/ }),
@@ -14274,6 +14267,29 @@ exports.addLabels = addLabels;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14284,51 +14300,58 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+const core = __importStar(__nccwpck_require__(1650));
 const teams_1 = __nccwpck_require__(7255);
 const github_1 = __nccwpck_require__(534);
 const code_owner_utils_1 = __nccwpck_require__(7408);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        // try {
-        //   const token = core.getInput('repo-token', {required: true})
-        //   const configPath = core.getInput('configuration-path', {required: true})
-        //   const teamsRepo = core.getInput('teams-repo', {required: false})
-        //   const teamsBranch = core.getInput('teams-branch', {required: false})
-        //   const prNumber = getPrNumber()
-        //   if (!prNumber) {
-        //     core.info('Could not get pull request number from context, exiting')
-        //     return
-        //   }
-        //   const author = getPrAuthor()
-        //   if (!author) {
-        //     core.info('Could not get pull request user from context, exiting')
-        //     return
-        //   }
-        //   const client = createClient(token)
-        //   const labelsConfiguration: Map<string, string[]> =
-        //     await getLabelsConfiguration(
-        //       client,
-        //       configPath,
-        //       teamsRepo !== '' ? {repo: teamsRepo, ref: teamsBranch} : undefined
-        //     )
-        //   const labels: string[] = getTeamLabel(labelsConfiguration, `@${author}`)
-        //   if (labels.length > 0) await addLabels(client, prNumber, labels)
-        //   core.setOutput('team_labels', JSON.stringify(labels))
-        // } catch (error) {
-        //   if (error instanceof Error) {
-        //     core.error(error)
-        //     core.setFailed(error.message)
-        //   }
-        // }
-        const token = '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';
-        const codeOwnersConfigPath = 'CODEOWNERS';
-        const teamLabelerConfigPath = '.github/teams.yml';
-        const client = (0, github_1.createClient)(token);
-        const codeOwners = yield (0, code_owner_utils_1.getCodeOwners)(client, codeOwnersConfigPath, undefined);
-        console.log('Code owners are :- ', codeOwners);
-        const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, teamLabelerConfigPath, undefined);
-        const labels = (0, teams_1.getTeamLabel)(labelsConfiguration, codeOwners);
-        console.log(labels);
+        try {
+            const token = core.getInput('repo-token', { required: true });
+            const codeOwnersConfigPath = core.getInput('code-owners-config-path', {
+                required: true
+            });
+            const teamLabelerConfigPath = core.getInput('team-labeler-config-path', {
+                required: true
+            });
+            const prNumber = (0, github_1.getPrNumber)();
+            if (!prNumber) {
+                core.info('Could not get pull request number from context, exiting');
+                return;
+            }
+            core.info(`PR number is :- ${prNumber}`);
+            const author = (0, github_1.getPrAuthor)();
+            if (!author) {
+                core.info('Could not get pull request user from context, exiting');
+                return;
+            }
+            core.info(`PR author is :- ${author}`);
+            const client = (0, github_1.createClient)(token);
+            core.info('Fetching PR details...');
+            core.info('PR details fetched');
+            core.info('Fetching Code Owners details...');
+            const codeOwners = yield (0, code_owner_utils_1.getCodeOwners)(client, codeOwnersConfigPath, prNumber);
+            core.info(`Code owners are :- ${codeOwners}`);
+            core.debug(`Fetching labels configuration ...`);
+            const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, teamLabelerConfigPath);
+            core.info(`Labels Configuration :- ${labelsConfiguration}`);
+            const participants = [...codeOwners];
+            if (!codeOwners.includes(`@${author}`)) {
+                participants.push(`@${author}`);
+            }
+            const labels = (0, teams_1.getTeamLabel)(labelsConfiguration, participants);
+            core.info(`Labels to add :- ${labels}`);
+            if (labels.length > 0)
+                yield (0, github_1.addLabels)(client, prNumber, labels);
+            core.setOutput('team_labels', JSON.stringify(labels));
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                core.error(error);
+                core.setFailed(error.message);
+            }
+        }
     });
 }
 run();

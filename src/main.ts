@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as core from '@actions/core'
 import {getTeamLabel} from './teams'
@@ -12,58 +11,58 @@ import {
 import {getCodeOwners} from './code-owner.utils'
 
 async function run() {
-  // try {
-  //   const token = core.getInput('repo-token', {required: true})
-  //   const configPath = core.getInput('configuration-path', {required: true})
-  //   const teamsRepo = core.getInput('teams-repo', {required: false})
-  //   const teamsBranch = core.getInput('teams-branch', {required: false})
+  try {
+    const token = core.getInput('repo-token', {required: true})
+    const codeOwnersConfigPath = core.getInput('code-owners-config-path', {
+      required: true
+    })
+    const teamLabelerConfigPath = core.getInput('team-labeler-config-path', {
+      required: true
+    })
 
-  //   const prNumber = getPrNumber()
-  //   if (!prNumber) {
-  //     core.info('Could not get pull request number from context, exiting')
-  //     return
-  //   }
+    const prNumber = getPrNumber()
+    if (!prNumber) {
+      core.info('Could not get pull request number from context, exiting')
+      return
+    }
+    core.info(`PR number is :- ${prNumber}`)
 
-  //   const author = getPrAuthor()
-  //   if (!author) {
-  //     core.info('Could not get pull request user from context, exiting')
-  //     return
-  //   }
+    const author = getPrAuthor()
+    if (!author) {
+      core.info('Could not get pull request user from context, exiting')
+      return
+    }
+    core.info(`PR author is :- ${author}`)
 
-  //   const client = createClient(token)
-  //   const labelsConfiguration: Map<string, string[]> =
-  //     await getLabelsConfiguration(
-  //       client,
-  //       configPath,
-  //       teamsRepo !== '' ? {repo: teamsRepo, ref: teamsBranch} : undefined
-  //     )
+    const client = createClient(token)
+    core.info('Fetching PR details...')
+    core.info('PR details fetched')
+    core.info('Fetching Code Owners details...')
+    const codeOwners = await getCodeOwners(
+      client,
+      codeOwnersConfigPath,
+      prNumber
+    )
+    core.info(`Code owners are :- ${codeOwners}`)
+    core.debug(`Fetching labels configuration ...`)
+    const labelsConfiguration: Map<string, string[]> =
+      await getLabelsConfiguration(client, teamLabelerConfigPath)
+    core.info(`Labels Configuration :- ${labelsConfiguration}`)
+    const participants = [...codeOwners]
+    if (!codeOwners.includes(`@${author}`)) {
+      participants.push(`@${author}`)
+    }
+    const labels: string[] = getTeamLabel(labelsConfiguration, participants)
+    core.info(`Labels to add :- ${labels}`)
 
-  //   const labels: string[] = getTeamLabel(labelsConfiguration, `@${author}`)
-
-  //   if (labels.length > 0) await addLabels(client, prNumber, labels)
-  //   core.setOutput('team_labels', JSON.stringify(labels))
-  // } catch (error) {
-  //   if (error instanceof Error) {
-  //     core.error(error)
-  //     core.setFailed(error.message)
-  //   }
-  // }
-
-  const token = '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'
-  const codeOwnersConfigPath = 'CODEOWNERS'
-  const teamLabelerConfigPath = '.github/teams.yml'
-  const client = createClient(token)
-  const codeOwners = await getCodeOwners(
-    client,
-    codeOwnersConfigPath,
-    undefined
-  )
-  console.log('Code owners are :- ', codeOwners)
-  const labelsConfiguration: Map<string, string[]> =
-    await getLabelsConfiguration(client, teamLabelerConfigPath, undefined)
-
-  const labels: string[] = getTeamLabel(labelsConfiguration, codeOwners)
-  console.log(labels)
+    if (labels.length > 0) await addLabels(client, prNumber, labels)
+    core.setOutput('team_labels', JSON.stringify(labels))
+  } catch (error) {
+    if (error instanceof Error) {
+      core.error(error)
+      core.setFailed(error.message)
+    }
+  }
 }
 
 run()
