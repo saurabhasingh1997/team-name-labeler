@@ -125,6 +125,6 @@ export async function getChangedFiles(
   const listFilesResponse = await client.paginate(listFilesOptions)
   const changedFiles = listFilesResponse.map((f: any) => f.filename)
 
-  core.debug('found changed files:')
+  core.info('found changed files:')
   return changedFiles
 }

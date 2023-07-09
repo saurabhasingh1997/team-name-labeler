@@ -8,5 +8,5 @@ export function getTeamLabel(
       if (teamDevelopers.includes(developer)) labels.push(teamLabel)
   }
 
-  return labels
+  return [...new Set(labels)]
 }

@@ -28,8 +28,8 @@ export async function getCodeOwners(
     values.shift()
     globsToDevMapper[pathGlob] = values
   })
-  core.info(`Globs to Dev mapper is :- ${globsToDevMapper}`)
-  core.debug(`fetching changed files for pr #${prNumber}`)
+  core.info(`Globs to Dev mapper is :- ${JSON.stringify(globsToDevMapper)}`)
+  core.info(`fetching changed files for pr #${prNumber}`)
   const changedFiles: string[] = await getChangedFiles(client, prNumber)
   core.info(`Changed files are :- ${changedFiles}`)
 
@@ -45,6 +45,11 @@ export async function getCodeOwners(
       }
     }
   }
+  core.info(
+    `***** Matched Globs to Dev mapper is :- ${JSON.stringify(
+      matchedGlobsToDevMapper
+    )}`
+  )
   const codeOwners = Object.values(matchedGlobsToDevMapper).flat()
   return [...new Set(codeOwners)]
 }
@@ -67,17 +72,15 @@ async function fetchContent(client: GitHub, path: string): Promise<string> {
 }
 
 function isMatch(changedFile: string, matchers: Minimatch[]): string {
-  core.debug(`    matching patterns against file ${changedFile}`)
+  core.info(`    matching patterns against file ${changedFile}`)
   for (const matcher of matchers) {
     if (matcher.match(changedFile)) {
-      core.debug(
-        `   ${changedFile}  matched against  ${printPattern(matcher)} `
-      )
+      core.info(`   ${changedFile}  matched against  ${printPattern(matcher)} `)
       return matcher.pattern
     }
   }
 
-  core.debug(`  ${changedFile} didn't match `)
+  core.info(`  ${changedFile} didn't match `)
   return ''
 }
 

@@ -44,7 +44,7 @@ async function run() {
       prNumber
     )
     core.info(`Code owners are :- ${codeOwners}`)
-    core.debug(`Fetching labels configuration ...`)
+    core.info(`Fetching labels configuration ...`)
     const labelsConfiguration: Map<string, string[]> =
       await getLabelsConfiguration(client, teamLabelerConfigPath)
     core.info(`Labels Configuration :- ${labelsConfiguration}`)

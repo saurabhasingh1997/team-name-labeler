@@ -14049,8 +14049,8 @@ function getCodeOwners(client, configurationPath, prNumber) {
             values.shift();
             globsToDevMapper[pathGlob] = values;
         });
-        core.info(`Globs to Dev mapper is :- ${globsToDevMapper}`);
-        core.debug(`fetching changed files for pr #${prNumber}`);
+        core.info(`Globs to Dev mapper is :- ${JSON.stringify(globsToDevMapper)}`);
+        core.info(`fetching changed files for pr #${prNumber}`);
         const changedFiles = yield (0, github_1.getChangedFiles)(client, prNumber);
         core.info(`Changed files are :- ${changedFiles}`);
         const matchers = Object.keys(globsToDevMapper).map(pathGlob => new minimatch_1.Minimatch(pathGlob, { dot: true }));
@@ -14063,6 +14063,7 @@ function getCodeOwners(client, configurationPath, prNumber) {
                 }
             }
         }
+        core.info(`***** Matched Globs to Dev mapper is :- ${JSON.stringify(matchedGlobsToDevMapper)}`);
         const codeOwners = Object.values(matchedGlobsToDevMapper).flat();
         return [...new Set(codeOwners)];
     });
@@ -14085,14 +14086,14 @@ function fetchContent(client, path) {
     });
 }
 function isMatch(changedFile, matchers) {
-    core.debug(`    matching patterns against file ${changedFile}`);
+    core.info(`    matching patterns against file ${changedFile}`);
     for (const matcher of matchers) {
         if (matcher.match(changedFile)) {
-            core.debug(`   ${changedFile}  matched against  ${printPattern(matcher)} `);
+            core.info(`   ${changedFile}  matched against  ${printPattern(matcher)} `);
             return matcher.pattern;
         }
     }
-    core.debug(`  ${changedFile} didn't match `);
+    core.info(`  ${changedFile} didn't match `);
     return '';
 }
 function printPattern(matcher) {
@@ -14253,7 +14254,7 @@ function getChangedFiles(client, prNumber) {
         });
         const listFilesResponse = yield client.paginate(listFilesOptions);
         const changedFiles = listFilesResponse.map((f) => f.filename);
-        core.debug('found changed files:');
+        core.info('found changed files:');
         return changedFiles;
     });
 }
@@ -14333,7 +14334,7 @@ function run() {
             core.info('Fetching Code Owners details...');
             const codeOwners = yield (0, code_owner_utils_1.getCodeOwners)(client, codeOwnersConfigPath, prNumber);
             core.info(`Code owners are :- ${codeOwners}`);
-            core.debug(`Fetching labels configuration ...`);
+            core.info(`Fetching labels configuration ...`);
             const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, teamLabelerConfigPath);
             core.info(`Labels Configuration :- ${labelsConfiguration}`);
             const participants = [...codeOwners];
@@ -14373,7 +14374,7 @@ function getTeamLabel(labelsConfiguration, developers) {
             if (teamDevelopers.includes(developer))
                 labels.push(teamLabel);
     }
-    return labels;
+    return [...new Set(labels)];
 }
 exports.getTeamLabel = getTeamLabel;
 
