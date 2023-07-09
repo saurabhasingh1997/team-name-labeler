@@ -14044,7 +14044,7 @@ function getCodeOwners(client, configurationPath, prNumber) {
             let pathGlob = values[0].slice(1); // removes preceeding '/'
             const isFolder = pathGlob.endsWith('/');
             if (isFolder) {
-                pathGlob += '**';
+                pathGlob += '**/*';
             }
             values.shift();
             globsToDevMapper[pathGlob] = values;
@@ -14336,7 +14336,7 @@ function run() {
             core.info(`Code owners are :- ${codeOwners}`);
             core.info(`Fetching labels configuration ...`);
             const labelsConfiguration = yield (0, github_1.getLabelsConfiguration)(client, teamLabelerConfigPath);
-            core.info(`Labels Configuration :- ${labelsConfiguration}`);
+            core.info(`Labels Configuration :- ${JSON.stringify(labelsConfiguration)}`);
             const participants = [...codeOwners];
             if (!codeOwners.includes(`@${author}`)) {
                 participants.push(`@${author}`);

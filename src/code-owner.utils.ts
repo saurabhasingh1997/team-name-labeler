@@ -23,7 +23,7 @@ export async function getCodeOwners(
     let pathGlob = values[0].slice(1) // removes preceeding '/'
     const isFolder = pathGlob.endsWith('/')
     if (isFolder) {
-      pathGlob += '**'
+      pathGlob += '**/*'
     }
     values.shift()
     globsToDevMapper[pathGlob] = values

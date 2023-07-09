@@ -47,7 +47,7 @@ async function run() {
     core.info(`Fetching labels configuration ...`)
     const labelsConfiguration: Map<string, string[]> =
       await getLabelsConfiguration(client, teamLabelerConfigPath)
-    core.info(`Labels Configuration :- ${labelsConfiguration}`)
+    core.info(`Labels Configuration :- ${JSON.stringify(labelsConfiguration)}`)
     const participants = [...codeOwners]
     if (!codeOwners.includes(`@${author}`)) {
       participants.push(`@${author}`)
