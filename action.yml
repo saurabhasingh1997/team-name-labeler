@@ -1,5 +1,5 @@
 name: 'team-name-labeler'
-description: 'Adds labels to PR's automatically based on code-owners and PR author'
+description: 'Adds labels to pull requests automatically based on code-owners and PR author'
 author: 'Saurabh Singh'
 branding:
   icon: 'bookmark'
