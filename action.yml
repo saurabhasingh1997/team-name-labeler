@@ -1,12 +1,15 @@
 name: 'team-name-labeler'
 description: 'Adds labels to PR's automatically based on code-owners and PR author'
 author: 'Saurabh Singh'
+branding:
+  icon: 'bookmark'
+  color: 'yellow'
 inputs:
   repo-token:
     description: 'The GitHub token used to add/remove labels'
     required: false
     default: ${{ github.token }}
-  code-owners-config-pathn:
+  code-owners-config-path:
     description: 'CODEOWNERS file path used to get owners for file changes'
     required: true
     default: '.github/CODEOWNERS'
