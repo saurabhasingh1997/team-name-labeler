@@ -1,6 +1,45 @@
-
 # team-name-labeler action
 
-Use this action to auto-add label you PR's.:rocket:
+This GitHub Action can be used to add labels to your pull requests automatically based on code owners and PR author.
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+## Dependencies
+
+This GitHub Action relies on the following dependencies:
+
+- `@actions/core`: The @actions/core package provides functions for setting and getting input and output variables used in GitHub Actions.
+- `@actions/github`: The @actions/github package provides functions for interacting with the GitHub API in GitHub Actions.
+- `octokit`: The octokit package is used for making API requests to the GitHub API.
+- `minimatch`: The picomatch package is used for pattern matching using regular expressions.
+
+You will also need to create following 2 files in your repo :-
+
+- `CODEOWNERS`: File for matching files against a set of developers.
+- `teams.yml`: File for matching teams against a set of developers.
+
+## Usage
+
+```yaml
+# (Inside a workflow)
+steps:
+  - uses: saurabhasingh1997/team-name-labeler@v1.1
+    with:
+      repo-token: '${{ secrets.GITHUB_TOKEN }}'
+      code-owners-config-path: '.github/CODEOWNERS'
+      team-labeler-config-path: '.github/teams.yml'
+```
+
+### `repo-token`
+
+The GitHub token used to authenticate API requests. You can use the `{{ secrets.GITHUB_TOKEN }}` token available in your workflow without any additional setup.
+
+### `code-owners-config-path` (required)
+
+Path of your CODEOWNERS file. Default value is '.github/CODEOWNERS'
+
+### `team-labeler-config-path` (required)
+
+Path of your yml file containing teams to developer mapping. Default value is '.github/teams.yml'
+
+## Support
+
+For any questions or issues regarding this GitHub Action, please open an issue in the repository.
