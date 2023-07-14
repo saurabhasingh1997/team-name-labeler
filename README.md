@@ -26,15 +26,15 @@ You will also need to create following 2 files in your repo :-
 ### `teams.yml file template`
 
 ```yaml
-team1:
+teamLabel1:
   - '@user1'
   - '@user2'
 
-team2:
+teamLabel2:
   - '@user3'
   - '@user4'
 
-team3:
+teamLabel3:
   - '@user5'
 ```
 
