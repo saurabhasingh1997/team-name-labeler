@@ -9,12 +9,34 @@ This GitHub Action relies on the following dependencies:
 - `@actions/core`: The @actions/core package provides functions for setting and getting input and output variables used in GitHub Actions.
 - `@actions/github`: The @actions/github package provides functions for interacting with the GitHub API in GitHub Actions.
 - `octokit`: The octokit package is used for making API requests to the GitHub API.
-- `minimatch`: The picomatch package is used for pattern matching using regular expressions.
 
 You will also need to create following 2 files in your repo :-
 
 - `CODEOWNERS`: File for matching files against a set of developers.
 - `teams.yml`: File for matching teams against a set of developers.
+
+### `CODEOWNERS file template`
+
+```yaml
+/src/components @user1 @user2
+/src/screens/ @user3 @user4
+/.github/ @user5
+```
+
+### `teams.yml file template`
+
+```yaml
+team1:
+  - '@user1'
+  - '@user2'
+
+team2:
+  - '@user3'
+  - '@user4'
+
+team3:
+  - '@user5'
+```
 
 ## Usage
 

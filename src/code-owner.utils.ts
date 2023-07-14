@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as github from '@actions/github'
 import * as core from '@actions/core'
-import {Minimatch} from 'minimatch'
 import {getChangedFiles} from './github'
 
 type GitHub = ReturnType<typeof github.getOctokit>
@@ -20,11 +19,7 @@ export async function getCodeOwners(
   const globsToDevMapper: Record<string, string[]> = {}
   contentLines.map(currentLine => {
     const values = currentLine.split(' ')
-    let pathGlob = values[0].slice(1) // removes preceeding '/'
-    const isFolder = pathGlob.endsWith('/')
-    if (isFolder) {
-      pathGlob += '**/*'
-    }
+    const pathGlob = values[0].slice(1) // removes preceeding '/'
     values.shift()
     globsToDevMapper[pathGlob] = values
   })
@@ -33,9 +28,7 @@ export async function getCodeOwners(
   const changedFiles: string[] = await getChangedFiles(client, prNumber)
   core.info(`Changed files are :- ${changedFiles}`)
 
-  const matchers = Object.keys(globsToDevMapper).map(
-    pathGlob => new Minimatch(pathGlob, {dot: true})
-  )
+  const matchers = Object.keys(globsToDevMapper)
   const matchedGlobsToDevMapper: Record<string, string[]> = {}
   for (const changedFile of changedFiles) {
     const matchedGlob = isMatch(changedFile, matchers)
@@ -71,19 +64,15 @@ async function fetchContent(client: GitHub, path: string): Promise<string> {
   throw new Error('Invalid CodeOwners file')
 }
 
-function isMatch(changedFile: string, matchers: Minimatch[]): string {
+function isMatch(changedFile: string, matchers: string[]): string {
   core.info(`    matching patterns against file ${changedFile}`)
   for (const matcher of matchers) {
-    if (matcher.match(changedFile)) {
-      core.info(`   ${changedFile}  matched against  ${printPattern(matcher)} `)
-      return matcher.pattern
+    if (changedFile.startsWith(matcher)) {
+      core.info(`   ${changedFile}  matched against  ${matcher} `)
+      return matcher
     }
   }
 
   core.info(`  ${changedFile} didn't match `)
   return ''
-}
-
-function printPattern(matcher: Minimatch): string {
-  return (matcher.negate ? '!' : '') + matcher.pattern
 }
