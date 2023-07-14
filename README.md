@@ -43,7 +43,7 @@ teamLabel3:
 ```yaml
 # (Inside a workflow)
 steps:
-  - uses: saurabhasingh1997/team-name-labeler@v1.1
+  - uses: saurabhasingh1997/team-name-labeler@v1.2.1
     with:
       repo-token: '${{ secrets.GITHUB_TOKEN }}'
       code-owners-config-path: '.github/CODEOWNERS'
